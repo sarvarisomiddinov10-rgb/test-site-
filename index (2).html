@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<title>Bilim testi</title>
+
+<style>
+body{
+margin:0;
+font-family:Arial;
+background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+min-height:100vh;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.box{
+background:white;
+width:100%;
+max-width:420px;
+margin:10px;
+padding:20px;
+border-radius:18px;
+box-shadow:0 20px 40px rgba(0,0,0,0.3);
+text-align:center;
+transition:0.3s;
+}
+
+button{
+width:100%;
+padding:14px;
+font-size:17px;
+border:none;
+border-radius:12px;
+cursor:pointer;
+}
+
+.start{background:#2563eb;color:white;}
+.next{background:#16a34a;color:white;margin-top:12px;}
+
+.answer{
+display:block;
+padding:16px;
+margin:12px 0;
+border-radius:14px;
+border:2px solid #e5e7eb;
+font-size:16px;
+cursor:pointer;
+background:#f9fafb;
+}
+
+.answer input{
+transform:scale(1.4);
+margin-right:10px;
+}
+
+.answer:has(input:checked){
+background:#dbeafe;
+border-color:#2563eb;
+}
+
+/* ANIMATSIYALAR */
+.correct{
+animation:pop 0.4s ease;
+background:#dcfce7 !important;
+border-color:#16a34a !important;
+}
+
+.wrong{
+animation:shake 0.4s;
+background:#fee2e2 !important;
+border-color:#dc2626 !important;
+}
+
+@keyframes pop{
+0%{transform:scale(0.9);}
+100%{transform:scale(1);}
+}
+
+@keyframes shake{
+0%{transform:translateX(0);}
+25%{transform:translateX(-5px);}
+50%{transform:translateX(5px);}
+75%{transform:translateX(-5px);}
+100%{transform:translateX(0);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="box" id="box">
+<h2>Bilim testi 🧠</h2>
+<p id="level">Daraja: Oddiy 🟢</p>
+
+<button id="startBtn" class="start" onclick="startTest()">
+Testni boshlash
+</button>
+
+<div id="test" style="display:none;">
+<p id="progress"></p>
+<p><b id="score">Ball: 0</b></p>
+
+<h3 id="question"></h3>
+<div id="answers"></div>
+<p id="feedback"></p>
+
+<button class="next" onclick="nextQuestion()">
+Keyingi savol
+</button>
+</div>
+
+<p id="result" style="font-weight:bold;margin-top:15px;"></p>
+</div>
+
+<!-- OVOZLAR -->
+<audio id="correctSound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+<audio id="wrongSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+
+<script>
+var questions=[
+{q:"O‘zbekiston poytaxti?",a:["Samarqand","Toshkent","Buxoro","Xiva"],c:1},
+{q:"2+2=?",a:["3","4","5","6"],c:1},
+{q:"Yer Quyosh atrofida?",a:["180","365","30","90"],c:1},
+{q:"AQSH poytaxti?",a:["NY","Washington","LA","Chicago"],c:1},
+{q:"Eng katta okean?",a:["Atlantika","Hind","Tinch","Arktika"],c:2},
+{q:"Binary 101 = ?",a:["4","5","6","7"],c:1}
+]; // qisqartirdim, sening 60 taliging bilan ham ishlaydi
+
+var index=0,score=0;
+
+function startTest(){
+document.getElementById("startBtn").style.display="none";
+document.getElementById("test").style.display="block";
+showQuestion();
+}
+
+function showQuestion(){
+var q=questions[index];
+document.getElementById("progress").innerText="Savol "+(index+1)+" / "+questions.length;
+
+var level="Oddiy 🟢";
+if(index>=20) level="Aqlli 🔵";
+if(index>=40) level="Genius 🔴";
+document.getElementById("level").innerText="Daraja: "+level;
+
+document.getElementById("question").innerText=q.q;
+document.getElementById("answers").innerHTML="";
+document.getElementById("feedback").innerText="";
+document.getElementById("box").className="box";
+
+for(let i=0;i<q.a.length;i++){
+document.getElementById("answers").innerHTML+=`
+<label class="answer">
+<input type="radio" name="ans" value="${i}">
+${q.a[i]}
+</label>`;
+}
+}
+
+function nextQuestion(){
+var sel=document.querySelector('input[name="ans"]:checked');
+if(!sel){alert("Javob tanla 🙂");return;}
+
+var box=document.getElementById("box");
+
+if(Number(sel.value)===questions[index].c){
+score++;
+document.getElementById("feedback").innerText="To‘g‘ri 🎉";
+document.getElementById("correctSound").play();
+box.classList.add("correct");
+}else{
+document.getElementById("feedback").innerText="Xato 😅";
+document.getElementById("wrongSound").play();
+box.classList.add("wrong");
+}
+
+document.getElementById("score").innerText="Ball: "+score;
+index++;
+
+if(index<questions.length){
+setTimeout(showQuestion,600);
+}else{
+document.getElementById("test").style.display="none";
+document.getElementById("result").innerText=
+"Test tugadi! Ball: "+score+". SEN ZO‘RSAN 🔥";
+}
+}
+</script>
+
+</body>
+</html>
