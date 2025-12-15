@@ -1,139 +1,173 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Bilim testi</title>
-<style>
-*{
-  box-sizing:border-box;
-  font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
-}
-body{
-  margin:0;
-  min-height:100vh;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:radial-gradient(circle at top, #1e3c72, #2a5298);
-}
-.card{
-  background:#fff;
-  width:95%;
-  max-width:420px;
-  padding:26px;
-  border-radius:22px;
-  box-shadow:0 30px 60px rgba(0,0,0,.35);
-  animation:pop .45s ease;
-}
-@keyframes pop{0%{opacity:0;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
-h2{text-align:center;margin:5px 0 10px;font-size:26px}
-.info{display:flex;justify-content:space-between;font-size:14px;color:#555}
-.question{font-size:19px;margin:18px 0;font-weight:600}
-.option{
-  background:linear-gradient(135deg,#f8f9fa,#e9ecef);
-  padding:18px;
-  border-radius:16px;
-  margin-bottom:14px;
-  cursor:pointer;
-  font-size:17px;
-  transition:.2s;
-  border:2px solid transparent;
-}
-.option:hover{transform:scale(1.02)}
-.option.selected{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#2196f3}
-button{
-  width:100%;
-  padding:18px;
-  border:none;
-  border-radius:18px;
-  background:linear-gradient(135deg,#00c853,#009624);
-  color:#fff;
-  font-size:19px;
-  font-weight:600;
-  cursor:pointer;
-  transition:.2s;
-}
-button:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(0,0,0,.25)}
-.result{text-align:center}
-.result p{font-size:18px}
-.ad-box{
-  margin-top:18px;
-  padding:14px;
-  background:linear-gradient(135deg,#f1f3f5,#e9ecef);
-  text-align:center;
-  border-radius:14px;
-  font-size:14px;
-  color:#666;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bilim testi</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    }
+    .card {
+      background: #fff;
+      width: 95%;
+      max-width: 420px;
+      padding: 24px;
+      border-radius: 16px;
+      box-shadow: 0 15px 40px rgba(0,0,0,.3);
+      animation: fadeIn .5s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .info {
+      text-align: center;
+      margin-bottom: 15px;
+      font-size: 14px;
+      color: #444;
+    }
+    .question {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+    .option {
+      padding: 16px;
+      margin-bottom: 10px;
+      border-radius: 12px;
+      background: #f1f1f1;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all .2s ease;
+    }
+    .option:hover { background: #e2e2e2; }
+    .option.correct {
+      background: #2ecc71;
+      color: #fff;
+      animation: pulse .4s ease;
+    }
+    .option.wrong {
+      background: #e74c3c;
+      color: #fff;
+      animation: shake .4s ease;
+    }
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-5px); }
+      100% { transform: translateX(0); }
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    button {
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 18px;
+      background: #27ae60;
+      color: #fff;
+      cursor: pointer;
+      margin-top: 10px;
+      display: none;
+    }
+    button:hover { background: #219150; }
+    .result {
+      text-align: center;
+      font-size: 20px;
+    }
+  </style>
 </head>
 <body>
-<div class="card" id="app"></div>
+  <div class="card">
+    <h1>🧠 Bilim testi</h1>
+    <div class="info" id="info"></div>
+    <div class="question" id="question"></div>
+    <div id="options"></div>
+    <button id="nextBtn">Keyingi savol</button>
+  </div>
 
 <script>
 const questions = [
-  {q:"O‘zbekiston poytaxti?",a:["Samarqand","Toshkent","Buxoro","Xiva"],c:1,l:"oson"},
-  {q:"Eng katta okean?",a:["Atlantika","Hind","Tinch","Shimoliy Muz"],c:2,l:"oson"},
-  {q:"Quyosh tizimida nechta sayyora bor?",a:["7","8","9","10"],c:1,l:"oson"},
-  {q:"Eng baland tog‘?",a:["Tyan-Shan","Elbrus","Everest","Pamir"],c:2,l:"oson"},
-  {q:"O‘zbekiston valyutasi?",a:["So‘m","Dollar","Rubl","Tenge"],c:0,l:"oson"},
-  {q:"Yer sun’iy yo‘ldoshi?",a:["Mars","Oy","Quyosh","Yulduz"],c:1,l:"oson"},
-  {q:"HTML nimani anglatadi?",a:["Hyper Text Markup Language","High Text","Home Tool","None"],c:0,l:"qiyin"},
-  {q:"JS qaysi til?",a:["Belgilash","Dasturlash","Grafika","Matn"],c:1,l:"qiyin"},
-  {q:"CSS vazifasi?",a:["Hisoblash","Dizayn","Server","Ma’lumot"],c:1,l:"qiyin"},
-  {q:"HTTP nimaga xizmat qiladi?",a:["Grafika","Internet aloqa","Video","Audio"],c:1,l:"qiyin"},
-  {q:"RAM nima?",a:["Xotira","Disk","CPU","Monitor"],c:0,l:"qiyin"},
-  {q:"URL nimani bildiradi?",a:["Manzil","Kod","Server","Ilova"],c:0,l:"qiyin"},
-  {q:"Binary sanoq tizimi?",a:["2","8","10","16"],c:0,l:"juda"},
-  {q:"CPU yuragi nima?",a:["ALU","RAM","GPU","SSD"],c:0,l:"juda"},
-  {q:"IPv4 nechta bit?",a:["16","32","64","128"],c:1,l:"juda"},
-  {q:"DNS vazifasi?",a:["IP tarjima","Saqlash","Dizayn","Xavfsizlik"],c:0,l:"juda"},
-  {q:"Git nima?",a:["O‘yin","Versiya nazorati","Brauzer","OS"],c:1,l:"juda"},
-  {q:"API nima?",a:["Dastur interfeysi","Dizayn","Server","Xotira"],c:0,l:"juda"}
+  { q: "O‘zbekiston poytaxti?", a: ["Samarqand","Toshkent","Buxoro","Xiva"], c: 1 },
+  { q: "Eng katta okean?", a: ["Atlantika","Hind","Tinch","Shimoliy Muz"], c: 2 },
+  { q: "Yer Quyosh atrofida necha kunda aylanadi?", a: ["360","365","300","400"], c: 1 },
+  { q: "HTML nimani anglatadi?", a: ["Hyper Text Markup Language","High Text","Home Tool","None"], c: 0 }
 ];
 
-let index=0,score=0,selected=null;
-const app=document.getElementById('app');
+let index = 0;
+let score = 0;
+let locked = false;
 
-function render(){
-  if(index>=questions.length){
-    const percent=Math.round(score/questions.length*100);
-    app.innerHTML=`<div class='result'>
-      <h2>🎉 Natija</h2>
-      <p>Ball: <b>${score}/${questions.length}</b></p>
-      <p>Foiz: <b>${percent}%</b></p>
-      <div class='ad-box'>📢 Reklama (Monetag)</div>
-    </div>`;
+const info = document.getElementById('info');
+const questionEl = document.getElementById('question');
+const optionsEl = document.getElementById('options');
+const nextBtn = document.getElementById('nextBtn');
+
+function loadQuestion() {
+  locked = false;
+  nextBtn.style.display = 'none';
+  optionsEl.innerHTML = '';
+
+  if (index >= questions.length) {
+    questionEl.innerHTML = "Test tugadi!";
+    optionsEl.innerHTML = `<div class='result'>Ball: ${score} / ${questions.length}<br>Foiz: ${Math.round(score/questions.length*100)}%</div>`;
+    info.innerHTML = '';
     return;
   }
-  const q=questions[index];
-  app.innerHTML=`
-    <h2>🧠 Bilim testi</h2>
-    <div class='info'><span>Savol: ${index+1}/${questions.length}</span><span>Daraja: ${q.l}</span></div>
-    <div class='question'>${q.q}</div>
-    ${q.a.map((t,i)=>`<div class='option' onclick='select(${i})'>${t}</div>`).join('')}
-    <button onclick='next()'>Keyingi savol</button>
-  `;
-}
 
-function select(i){
-  selected=i;
-  document.querySelectorAll('.option').forEach((o,idx)=>{
-    o.classList.toggle('selected',idx===i);
+  info.innerHTML = `Savol ${index+1} / ${questions.length}`;
+  questionEl.textContent = questions[index].q;
+
+  questions[index].a.forEach((text, i) => {
+    const div = document.createElement('div');
+    div.className = 'option';
+    div.textContent = text;
+    div.onclick = () => checkAnswer(div, i);
+    optionsEl.appendChild(div);
   });
-  if(navigator.vibrate) navigator.vibrate(40);
 }
 
-function next(){
-  if(selected===null) return alert('Javob tanlang');
-  if(selected===questions[index].c) score++;
-  selected=null;
+function checkAnswer(el, i) {
+  if (locked) return;
+  locked = true;
+
+  const correct = questions[index].c;
+
+  if (i === correct) {
+    el.classList.add('correct');
+    score++;
+    navigator.vibrate?.(100);
+  } else {
+    el.classList.add('wrong');
+    optionsEl.children[correct].classList.add('correct');
+    navigator.vibrate?.([200,100,200]);
+  }
+  nextBtn.style.display = 'block';
+}
+
+nextBtn.onclick = () => {
   index++;
-  render();
-}
+  loadQuestion();
+};
 
-render();
+loadQuestion();
 </script>
 </body>
 </html>
