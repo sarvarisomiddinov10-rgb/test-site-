@@ -5,175 +5,120 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Bilim testi</title>
   <style>
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
       min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #000;
     }
     .card {
+      background: #fff;
       width: 100%;
       max-width: 420px;
-      background: #fff;
-      border-radius: 18px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-    }
-    h1 {
-      text-align: center;
-      margin: 0 0 10px;
-    }
-    .info {
-      font-size: 14px;
-      margin-bottom: 10px;
-    }
-    .question {
-      font-size: 18px;
-      margin: 15px 0;
-      font-weight: bold;
-    }
-    .answers label {
-      display: block;
-      padding: 14px;
-      margin-bottom: 10px;
-      border: 2px solid #ddd;
+      padding: 25px;
       border-radius: 12px;
-      cursor: pointer;
-      font-size: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.3);
     }
-    .answers input { display: none; }
-    .answers input:checked + span {
-      color: #fff;
-      background: #1e88e5;
-      border-radius: 10px;
-      padding: 12px;
-      display: block;
-    }
+    h1 { margin-top: 0; text-align: center; }
+    .info { margin-bottom: 10px; }
+    .question { font-weight: bold; margin: 15px 0; }
+    .option { margin: 8px 0; }
     button {
       width: 100%;
-      padding: 14px;
-      font-size: 18px;
+      padding: 12px;
+      margin-top: 15px;
       border: none;
-      border-radius: 14px;
-      background: #1ca64c;
-      color: white;
+      border-radius: 8px;
+      background: #16a34a;
+      color: #fff;
+      font-size: 16px;
       cursor: pointer;
     }
-    button:disabled { background: #aaa; }
-    footer {
-      text-align: center;
-      margin-top: 15px;
-      font-size: 13px;
-    }
-    footer a { color: #1e88e5; text-decoration: none; margin: 0 5px; }
+    button:disabled { background: #999; cursor: not-allowed; }
+    .result { text-align: center; }
   </style>
 </head>
 <body>
-
-  <div class="card">
-    <h1>🧠 Bilim testi</h1>
-    <div class="info">
-      Daraja: <b id="level">Oddiy</b><br />
-      Savol: <b id="count">1</b>/<b id="total">6</b><br />
-      Ball: <b id="score">0</b>
-    </div>
-
-    <div class="question" id="question"></div>
-
-    <div class="answers" id="answers"></div>
-
-    <button id="nextBtn" disabled>Keyingi savol</button>
-
-    <footer>
-      <a href="#">Biz haqimizda</a> |
-      <a href="#">Privacy Policy</a> |
-      <a href="#">Aloqa</a>
-    </footer>
-  </div>
+  <div class="card" id="app"></div>
 
 <script>
 const questions = [
-  {
-    q: "O‘zbekiston poytaxti qaysi?",
-    a: ["Samarqand", "Toshkent", "Buxoro", "Xiva"],
-    c: 1
-  },
-  {
-    q: "2 + 2 nechiga teng?",
-    a: ["3", "4", "5", "6"],
-    c: 1
-  },
-  {
-    q: "Yer qaysi sayyoraga tegishli?",
-    a: ["Mars", "Yer", "Venera", "Yupiter"],
-    c: 1
-  },
-  {
-    q: "HTML nimani anglatadi?",
-    a: ["Hyper Text Markup Language", "High Text Machine", "Home Tool", "None"],
-    c: 0
-  },
-  {
-    q: "JS nima?",
-    a: ["Java Source", "JavaScript", "Json Script", "None"],
-    c: 1
-  },
-  {
-    q: "CSS nimaga kerak?",
-    a: ["Dizayn", "Maʼlumot", "Server", "Hisob"],
-    c: 0
-  }
+  // OSON (10)
+  {q:"Oʻzbekiston poytaxti?", a:["Samarqand","Toshkent","Buxoro","Xiva"], c:1, l:"Oson"},
+  {q:"1 + 1 = ?", a:["1","2","3","4"], c:1, l:"Oson"},
+  {q:"Quyosh qaysi tomondan chiqadi?", a:["Shimol","Janub","Sharq","Gʻarb"], c:2, l:"Oson"},
+  {q:"Oʻzbekiston bayrogʻida nechta rang bor?", a:["2","3","4","5"], c:2, l:"Oson"},
+  {q:"Haftada nechta kun bor?", a:["5","6","7","8"], c:2, l:"Oson"},
+  {q:"Eng katta sayyora?", a:["Mars","Yer","Yupiter","Venera"], c:2, l:"Oson"},
+  {q:"Suv formulasi?", a:["CO2","H2O","O2","NaCl"], c:1, l:"Oson"},
+  {q:"HTML nimani anglatadi?", a:["Til","Dastur","Belgilash","Oʻyin"], c:2, l:"Oson"},
+  {q:"Kompyuter miyasi?", a:["RAM","CPU","SSD","Monitor"], c:1, l:"Oson"},
+  {q:"Yerning yoʻldoshi?", a:["Mars","Quyosh","Oy","Yulduz"], c:2, l:"Oson"},
+
+  // QIYIN (10)
+  {q:"Oʻzbekiston mustaqilligi qachon?", a:["1990","1991","1992","1993"], c:1, l:"Qiyin"},
+  {q:"CSS nimaga xizmat qiladi?", a:["Maʼlumot","Dizayn","Server","Oʻyin"], c:1, l:"Qiyin"},
+  {q:"JS qaysi tilda yozilgan?", a:["Java","C++","JavaScript","Python"], c:2, l:"Qiyin"},
+  {q:"HTTP nima?", a:["Protokol","Til","Server","Brauzer"], c:0, l:"Qiyin"},
+  {q:"GitHub nima?", a:["Oʻyin","Bulut","Repo","OS"], c:2, l:"Qiyin"},
+  {q:"2^5 = ?", a:["16","24","32","64"], c:2, l:"Qiyin"},
+  {q:"RAM vazifasi?", a:["Saqlash","Hisoblash","Vaqtinchalik xotira","Tarmoq"], c:2, l:"Qiyin"},
+  {q:"URL nimani bildiradi?", a:["Manzil","Server","Fayl","Kod"], c:0, l:"Qiyin"},
+  {q:"Frontend nimada ishlaydi?", a:["Brauzer","Server","Terminal","BIOS"], c:0, l:"Qiyin"},
+  {q:"Array nima?", a:["Funksiya","Oʻzgaruvchi","Massiv","Class"], c:2, l:"Qiyin"},
+
+  // JUDA QIYIN (10)
+  {q:"TCP/IP modeli nechta qatlamdan iborat?", a:["3","4","5","7"], c:1, l:"Juda qiyin"},
+  {q:"Closure nima?", a:["Xato","Funktsiya xotirasi","Loop","Array"], c:1, l:"Juda qiyin"},
+  {q:"DOM nima?", a:["Maʼlumot","Model","Hujjat obyekti","Server"], c:2, l:"Juda qiyin"},
+  {q:"Git pull vazifasi?", a:["Yuklash","Oʻchirish","Birlashtirish","Yangilash"], c:3, l:"Juda qiyin"},
+  {q:"API nima?", a:["Interfeys","Dastur","Brauzer","OS"], c:0, l:"Juda qiyin"},
+  {q:"Async nima?", a:["Sinxron","Kutishsiz","Xato","Sekin"], c:1, l:"Juda qiyin"},
+  {q:"JSON turi?", a:["Til","Format","Server","OS"], c:1, l:"Juda qiyin"},
+  {q:"SQL nima?", a:["Til","DB","Framework","OS"], c:0, l:"Juda qiyin"},
+  {q:"Recursion nima?", a:["Loop","Funksiya oʻzini chaqiradi","Xato","Array"], c:1, l:"Juda qiyin"},
+  {q:"Algorithm nima?", a:["Kod","Qoidalar ketma-ketligi","Xato","Maʼlumot"], c:1, l:"Juda qiyin"}
 ];
 
-let index = 0;
-let score = 0;
+let i = 0, score = 0;
+const app = document.getElementById('app');
 
-const qEl = document.getElementById('question');
-const aEl = document.getElementById('answers');
-const nextBtn = document.getElementById('nextBtn');
-
-function loadQuestion() {
-  nextBtn.disabled = true;
-  document.getElementById('count').textContent = index + 1;
-  qEl.textContent = questions[index].q;
-  aEl.innerHTML = '';
-
-  questions[index].a.forEach((text, i) => {
-    const label = document.createElement('label');
-    label.innerHTML = `<input type="radio" name="answer" value="${i}"><span>${text}</span>`;
-    aEl.appendChild(label);
-  });
-
-  document.querySelectorAll('input[name="answer"]').forEach(r => {
-    r.addEventListener('change', () => nextBtn.disabled = false);
-  });
+function render() {
+  if (i >= questions.length) {
+    app.innerHTML = `<div class='result'>
+      <h1>Test tugadi 🎉</h1>
+      <p>Ball: <b>${score} / ${questions.length}</b></p>
+      <button onclick='location.reload()'>Qayta boshlash</button>
+    </div>`;
+    return;
+  }
+  const q = questions[i];
+  app.innerHTML = `
+    <h1>Bilim testi 🧠</h1>
+    <div class='info'>Daraja: <b>${q.l}</b></div>
+    <div class='info'>Savol: ${i+1} / ${questions.length}</div>
+    <div class='info'>Ball: ${score}</div>
+    <div class='question'>${q.q}</div>
+    ${q.a.map((opt,idx)=>`<label class='option'><input type='radio' name='opt' value='${idx}'> ${opt}</label>`).join('')}
+    <button onclick='next()'>Keyingi savol</button>
+  `;
 }
 
-nextBtn.onclick = () => {
-  const selected = document.querySelector('input[name="answer"]:checked');
-  if (!selected) return;
+function next() {
+  const sel = document.querySelector('input[name=opt]:checked');
+  if (!sel) return alert('Javobni tanlang');
+  if (+sel.value === questions[i].c) score++;
+  i++; render();
+}
 
-  if (+selected.value === questions[index].c) score++;
-  document.getElementById('score').textContent = score;
-
-  index++;
-  if (index < questions.length) {
-    loadQuestion();
-  } else {
-    qEl.textContent = `Test tugadi! Natija: ${score}/${questions.length}`;
-    aEl.innerHTML = '';
-    nextBtn.style.display = 'none';
-  }
-};
-
-document.getElementById('total').textContent = questions.length;
-loadQuestion();
+render();
 </script>
-
 </body>
 </html>
+
+
 
