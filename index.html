@@ -6,6 +6,7 @@
 <title>Bilim testi</title>
 
 <style>
+*{box-sizing:border-box;font-family:Arial, sans-serif}
 body{
   margin:0;
   min-height:100vh;
@@ -13,7 +14,6 @@ body{
   justify-content:center;
   align-items:center;
   background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-  font-family:Arial,sans-serif;
 }
 .card{
   background:#fff;
@@ -21,109 +21,185 @@ body{
   max-width:420px;
   padding:25px;
   border-radius:18px;
-  box-shadow:0 15px 40px rgba(0,0,0,.3);
+  box-shadow:0 20px 40px rgba(0,0,0,.35);
+  animation:fade .4s ease;
 }
-h2{text-align:center}
-.option{
-  padding:18px;
-  border:2px solid #ddd;
-  border-radius:14px;
-  margin:12px 0;
+@keyframes fade{
+  from{opacity:0;transform:scale(.95)}
+  to{opacity:1;transform:scale(1)}
+}
+h2{text-align:center;margin-bottom:10px}
+.info{
+  display:flex;
+  justify-content:space-between;
+  font-size:14px;
+  margin-bottom:10px;
+}
+.question{
   font-size:18px;
-  cursor:pointer;
-  transition:.2s;
+  margin:15px 0;
 }
-.option:hover{background:#f1f1f1}
-.correct{background:#c8f7c5;border-color:green}
-.wrong{background:#f7c5c5;border-color:red}
+.option{
+  background:#f1f1f1;
+  padding:16px;
+  border-radius:12px;
+  margin-bottom:12px;
+  cursor:pointer;
+  font-size:17px;
+}
+.option:hover{background:#e2f0ff}
+.option.selected{
+  background:#d9ecff;
+  border:2px solid #2196f3;
+}
 button{
   width:100%;
   padding:16px;
-  font-size:18px;
   border:none;
   border-radius:14px;
-  background:#28a745;
+  background:#1fa84f;
   color:#fff;
+  font-size:18px;
   cursor:pointer;
 }
-.level{
+button:hover{background:#178f42}
+.result{
   text-align:center;
-  font-weight:bold;
-  margin-bottom:10px;
+}
+.ad-box{
+  margin-top:15px;
+  padding:15px;
+  background:#f5f5f5;
+  text-align:center;
+  border-radius:10px;
+  font-size:14px;
 }
 </style>
 </head>
 
 <body>
-<div class="card">
-  <div class="level" id="level">Daraja: Oson</div>
-  <h2 id="question">Savol</h2>
-  <div id="options"></div>
-  <button onclick="nextQuestion()">Keyingi</button>
-</div>
+
+<div class="card" id="app"></div>
+
+<audio id="clickSound">
+  <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3">
+</audio>
 
 <script>
-let levelIndex = 0;
-let qIndex = 0;
-let score = 0;
+// 🔊 Ovoz + 📳 Vibratsiya
+function feedback(){
+  document.getElementById("clickSound").play();
+  if(navigator.vibrate) navigator.vibrate(50);
+}
 
-const levels = [
-  {name:"Oson", questions:[
-    {q:"O‘zbekiston poytaxti?", a:["Samarqand","Toshkent","Buxoro","Xiva"], c:1},
-    {q:"1+1 nechiga teng?", a:["1","2","3","4"], c:1},
-  ]},
-  {name:"Qiyin", questions:[
-    {q:"Eng katta okean?", a:["Atlantika","Hind","Tinch","Shimoliy muz"], c:2},
-    {q:"HTML nimani anglatadi?", a:["Dastur","Belgilash tili","O‘yin","Server"], c:1},
-  ]},
-  {name:"Juda qiyin", questions:[
-    {q:"JS qaysi yil yaratilgan?", a:["1995","2000","1990","2010"], c:0},
-    {q:"CSS ochilishi?", a:["Design","Style Sheets","Script","Server"], c:1},
-  ]}
+// 🔹 SAVOLLAR
+const easy = [
+ {q:"O‘zbekiston poytaxti?",a:["Samarqand","Toshkent","Buxoro","Xiva"],c:1},
+ {q:"2+2 nechiga teng?",a:["3","4","5","6"],c:1},
+ {q:"Yer sayyorami?",a:["Ha","Yo‘q","Bilmayman","Yulduz"],c:0},
+ {q:"Quyosh qayerda?",a:["Yerda","Osmonda","Oyda","Suvda"],c:1},
+ {q:"1 hafta nechta kun?",a:["5","6","7","8"],c:2},
+ {q:"Suv rangi?",a:["Qizil","Ko‘k","Shaffof","Yashil"],c:2},
+ {q:"Olma nima?",a:["Hayvon","Meva","Mashina","Shahar"],c:1},
+ {q:"Oy nechchi?",a:["1","2","3","4"],c:0},
+ {q:"Kompyuter nima?",a:["O‘yin","Qurilma","Meva","Sport"],c:1},
+ {q:"Internet nima?",a:["Kitob","Tarmoq","Ovqat","Musiqa"],c:1}
 ];
 
-function loadQuestion(){
-  const lvl = levels[levelIndex];
-  document.getElementById("level").innerText = "Daraja: " + lvl.name;
-  const q = lvl.questions[qIndex];
-  document.getElementById("question").innerText = q.q;
-  const optDiv = document.getElementById("options");
-  optDiv.innerHTML = "";
-  q.a.forEach((opt,i)=>{
-    const div=document.createElement("div");
-    div.className="option";
-    div.innerText=opt;
-    div.onclick=()=>selectAnswer(div,i);
-    optDiv.appendChild(div);
+const medium = [
+ {q:"Eng katta okean?",a:["Atlantika","Hind","Tinch","Shimoliy Muz"],c:2},
+ {q:"HTML nimani bildiradi?",a:["Dastur","Belgilash tili","O‘yin","OS"],c:1},
+ {q:"CSS nima uchun?",a:["Mantiq","Dizayn","Server","Ma’lumot"],c:1},
+ {q:"JS nima?",a:["Til","Brauzer","Server","Telefon"],c:0},
+ {q:"O‘zbekiston qit’asi?",a:["Afrika","Yevropa","Osiyo","Amerika"],c:2},
+ {q:"1 km nechta metr?",a:["10","100","1000","10000"],c:2},
+ {q:"Eng tez hayvon?",a:["Sher","Ot","Gepard","Bo‘ri"],c:2},
+ {q:"Suv formulasi?",a:["CO2","H2O","O2","Na"],c:1},
+ {q:"CPU nima?",a:["Xotira","Protsessor","Disk","Monitor"],c:1},
+ {q:"URL nima?",a:["Manzil","Rasm","O‘yin","Fayl"],c:0}
+];
+
+const hard = [
+ {q:"IPv4 nechta bit?",a:["16","32","64","128"],c:1},
+ {q:"HTTPS nimani bildiradi?",a:["Xavfsiz","Tez","Oddiy","Bepul"],c:0},
+ {q:"RAM o‘chsa nima bo‘ladi?",a:["Saqlanadi","Yo‘qoladi","Ko‘payadi","Yashirinadi"],c:1},
+ {q:"GitHub nima?",a:["O‘yin","Kod platforma","Brauzer","Server"],c:1},
+ {q:"DNS vazifasi?",a:["Saqlash","Tarjima","Xavfsizlik","Dizayn"],c:1},
+ {q:"Frontend nima?",a:["Server","Foydalanuvchi tomoni","Ma’lumot","Tarmoq"],c:1},
+ {q:"Backend nima?",a:["Dizayn","Server","Rasm","Animatsiya"],c:1},
+ {q:"API nima?",a:["Bog‘lovchi","O‘yin","Til","OS"],c:0},
+ {q:"Framework nima?",a:["Asos","Kutubxona","O‘yin","Server"],c:0},
+ {q:"Bug nima?",a:["Xato","Funksiya","Dizayn","Tarmoq"],c:0}
+];
+
+const questions = [...easy, ...medium, ...hard];
+
+let index = 0;
+let score = 0;
+let selected = null;
+
+const app = document.getElementById("app");
+
+function level(){
+  if(index<10) return "Oson";
+  if(index<20) return "Qiyin";
+  return "Juda qiyin";
+}
+
+function render(){
+  const q = questions[index];
+  app.innerHTML = `
+    <h2>🧠 Bilim testi</h2>
+    <div class="info">
+      <span>Daraja: ${level()}</span>
+      <span>${index+1} / 30</span>
+    </div>
+    <div class="question">${q.q}</div>
+    ${q.a.map((o,i)=>`
+      <div class="option" onclick="choose(${i})">${o}</div>
+    `).join("")}
+    <button onclick="next()">Keyingi savol</button>
+
+    <div class="ad-box">
+      🔔 Reklama joyi (Monetag shu yerga qo‘yiladi)
+    </div>
+  `;
+}
+
+function choose(i){
+  feedback();
+  selected = i;
+  document.querySelectorAll(".option").forEach((el,idx)=>{
+    el.classList.toggle("selected", idx===i);
   });
 }
 
-function selectAnswer(el,i){
-  const correct = levels[levelIndex].questions[qIndex].c;
-  document.querySelectorAll(".option").forEach(o=>o.onclick=null);
-  if(i===correct){
-    el.classList.add("correct");
-    score++;
-  }else{
-    el.classList.add("wrong");
-  }
+function next(){
+  if(selected===null) return alert("Variant tanla!");
+  if(selected===questions[index].c) score++;
+  index++;
+  selected=null;
+
+  if(index>=questions.length) return result();
+  render();
 }
 
-function nextQuestion(){
-  qIndex++;
-  if(qIndex >= levels[levelIndex].questions.length){
-    levelIndex++;
-    qIndex=0;
-    if(levelIndex >= levels.length){
-      alert("Test tugadi! Ball: "+score);
-      return;
-    }
-  }
-  loadQuestion();
+function result(){
+  const percent = Math.round(score/30*100);
+  app.innerHTML = `
+    <div class="result">
+      <h2>🎉 Natija</h2>
+      <p>Ball: <b>${score} / 30</b></p>
+      <p>Foiz: <b>${percent}%</b></p>
+      <button onclick="location.reload()">Qayta boshlash</button>
+    </div>
+  `;
 }
 
-loadQuestion();
+render();
 </script>
+
 </body>
 </html>
+
 
