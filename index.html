@@ -1,173 +1,96 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bilim testi</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: Arial, sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-    }
-    .card {
-      background: #fff;
-      width: 95%;
-      max-width: 420px;
-      padding: 24px;
-      border-radius: 16px;
-      box-shadow: 0 15px 40px rgba(0,0,0,.3);
-      animation: fadeIn .5s ease;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: scale(.95); }
-      to { opacity: 1; transform: scale(1); }
-    }
-    h1 {
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .info {
-      text-align: center;
-      margin-bottom: 15px;
-      font-size: 14px;
-      color: #444;
-    }
-    .question {
-      font-size: 18px;
-      font-weight: bold;
-      margin-bottom: 15px;
-    }
-    .option {
-      padding: 16px;
-      margin-bottom: 10px;
-      border-radius: 12px;
-      background: #f1f1f1;
-      cursor: pointer;
-      font-size: 16px;
-      transition: all .2s ease;
-    }
-    .option:hover { background: #e2e2e2; }
-    .option.correct {
-      background: #2ecc71;
-      color: #fff;
-      animation: pulse .4s ease;
-    }
-    .option.wrong {
-      background: #e74c3c;
-      color: #fff;
-      animation: shake .4s ease;
-    }
-    @keyframes shake {
-      0% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      50% { transform: translateX(5px); }
-      75% { transform: translateX(-5px); }
-      100% { transform: translateX(0); }
-    }
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
-    }
-    button {
-      width: 100%;
-      padding: 16px;
-      border: none;
-      border-radius: 12px;
-      font-size: 18px;
-      background: #27ae60;
-      color: #fff;
-      cursor: pointer;
-      margin-top: 10px;
-      display: none;
-    }
-    button:hover { background: #219150; }
-    .result {
-      text-align: center;
-      font-size: 20px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bilim testi</title>
+<style>
+*{box-sizing:border-box;font-family:Arial, sans-serif}
+body{margin:0;min-height:100vh;display:flex;justify-content:center;align-items:center;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364)}
+.card{background:#fff;width:95%;max-width:420px;padding:24px;border-radius:18px;box-shadow:0 15px 40px rgba(0,0,0,.3)}
+h1{text-align:center}
+.info{text-align:center;margin-bottom:10px;color:#555}
+.question{font-size:18px;margin:15px 0;font-weight:bold}
+.option{padding:16px;border-radius:12px;margin-bottom:10px;background:#f1f1f1;cursor:pointer;font-size:16px}
+.option.correct{background:#2ecc71;color:#fff}
+.option.wrong{background:#e74c3c;color:#fff}
+button{width:100%;padding:16px;font-size:18px;border:none;border-radius:12px;background:#27ae60;color:#fff;display:none}
+.result{text-align:center;font-size:18px}
+</style>
 </head>
 <body>
-  <div class="card">
-    <h1>🧠 Bilim testi</h1>
-    <div class="info" id="info"></div>
-    <div class="question" id="question"></div>
-    <div id="options"></div>
-    <button id="nextBtn">Keyingi savol</button>
-  </div>
-
+<div class="card">
+<h1>🧠 Bilim testi</h1>
+<div class="info" id="info"></div>
+<div class="question" id="question"></div>
+<div id="options"></div>
+<button id="nextBtn">Keyingi savol</button>
+</div>
 <script>
+// 30 ta savol (10 oson, 10 qiyin, 10 juda qiyin)
 const questions = [
-  { q: "O‘zbekiston poytaxti?", a: ["Samarqand","Toshkent","Buxoro","Xiva"], c: 1 },
-  { q: "Eng katta okean?", a: ["Atlantika","Hind","Tinch","Shimoliy Muz"], c: 2 },
-  { q: "Yer Quyosh atrofida necha kunda aylanadi?", a: ["360","365","300","400"], c: 1 },
-  { q: "HTML nimani anglatadi?", a: ["Hyper Text Markup Language","High Text","Home Tool","None"], c: 0 }
+// OSON (1-10)
+{q:"O‘zbekiston poytaxti?",a:["Samarqand","Toshkent","Buxoro","Xiva"],c:1},
+{q:"2+2 nechiga teng?",a:["3","4","5","6"],c:1},
+{q:"Yer qaysi sayyora?",a:["Mars","Yer","Venera","Oy"],c:1},
+{q:"1 hafta nechta kun?",a:["5","6","7","8"],c:2},
+{q:"Suv formulasi?",a:["CO2","H2O","O2","Na"],c:1},
+{q:"Quyosh nima?",a:["Sayyora","Yulduz","Oy","Kometa"],c:1},
+{q:"Odam nechta ko‘zga ega?",a:["1","2","3","4"],c:1},
+{q:"Olma nima?",a:["Hayvon","Meva","Sabzavot","Ichimlik"],c:1},
+{q:"Yerning sun’iy yo‘ldoshi?",a:["Oy","Mars","Quyosh","Yulduz"],c:0},
+{q:"Kompyuter nima?",a:["Qurilma","Hayvon","Meva","Shahar"],c:0},
+// QIYIN (11-20)
+{q:"Eng katta okean?",a:["Atlantika","Hind","Tinch","Shimoliy Muz"],c:2},
+{q:"HTML nimani anglatadi?",a:["Belgilash tili","O‘yin","Server","OS"],c:0},
+{q:"CSS nima uchun?",a:["Mantiq","Dizayn","Server","Ma’lumot"],c:1},
+{q:"JS qaysi turdagi til?",a:["Belgilash","Dasturlash","Grafika","Matn"],c:1},
+{q:"1 km nechta metr?",a:["100","1000","10","10000"],c:1},
+{q:"O‘zbekiston qit’asi?",a:["Yevropa","Afrika","Osiyo","Amerika"],c:2},
+{q:"Eng tez hayvon?",a:["Sher","Gepard","Ot","Bo‘ri"],c:1},
+{q:"CPU nima?",a:["Xotira","Protsessor","Disk","Monitor"],c:1},
+{q:"URL nima?",a:["Manzil","Rasm","O‘yin","Fayl"],c:0},
+{q:"RAM nima?",a:["Xotira","Disk","CPU","GPU"],c:0},
+// JUDA QIYIN (21-30)
+{q:"IPv4 nechta bit?",a:["16","32","64","128"],c:1},
+{q:"DNS vazifasi?",a:["Tarjima","Saqlash","Dizayn","Xavfsizlik"],c:0},
+{q:"Frontend nima?",a:["Server","Foydalanuvchi tomoni","Ma’lumot","Tarmoq"],c:1},
+{q:"Backend nima?",a:["Dizayn","Server","Rasm","Animatsiya"],c:1},
+{q:"API nima?",a:["Interfeys","O‘yin","OS","Xotira"],c:0},
+{q:"Git nima?",a:["Brauzer","Versiya nazorati","O‘yin","OS"],c:1},
+{q:"Framework nima?",a:["Asos","Kutubxona","O‘yin","Server"],c:0},
+{q:"Bug nima?",a:["Xato","Dizayn","Funksiya","Tarmoq"],c:0},
+{q:"HTTPS nimani bildiradi?",a:["Xavfsiz","Tez","Oddiy","Bepul"],c:0},
+{q:"Binary sanoq tizimi asosi?",a:["2","8","10","16"],c:0}
 ];
-
-let index = 0;
-let score = 0;
-let locked = false;
-
-const info = document.getElementById('info');
-const questionEl = document.getElementById('question');
-const optionsEl = document.getElementById('options');
-const nextBtn = document.getElementById('nextBtn');
-
-function loadQuestion() {
-  locked = false;
-  nextBtn.style.display = 'none';
-  optionsEl.innerHTML = '';
-
-  if (index >= questions.length) {
-    questionEl.innerHTML = "Test tugadi!";
-    optionsEl.innerHTML = `<div class='result'>Ball: ${score} / ${questions.length}<br>Foiz: ${Math.round(score/questions.length*100)}%</div>`;
-    info.innerHTML = '';
-    return;
-  }
-
-  info.innerHTML = `Savol ${index+1} / ${questions.length}`;
-  questionEl.textContent = questions[index].q;
-
-  questions[index].a.forEach((text, i) => {
-    const div = document.createElement('div');
-    div.className = 'option';
-    div.textContent = text;
-    div.onclick = () => checkAnswer(div, i);
-    optionsEl.appendChild(div);
-  });
+let index=0,score=0,locked=false;
+const info=document.getElementById('info');
+const question=document.getElementById('question');
+const options=document.getElementById('options');
+const nextBtn=document.getElementById('nextBtn');
+function load(){
+ locked=false;nextBtn.style.display='none';options.innerHTML='';
+ if(index>=questions.length){
+  info.innerText='Test tugadi';
+  question.innerHTML=`Natija: ${score}/30 (${Math.round(score/30*100)}%)`;
+  return;
+ }
+ info.innerText=`Savol ${index+1} / 30`;
+ question.innerText=questions[index].q;
+ questions[index].a.forEach((t,i)=>{
+  const d=document.createElement('div');d.className='option';d.innerText=t;
+  d.onclick=()=>check(d,i);options.appendChild(d);
+ });
 }
-
-function checkAnswer(el, i) {
-  if (locked) return;
-  locked = true;
-
-  const correct = questions[index].c;
-
-  if (i === correct) {
-    el.classList.add('correct');
-    score++;
-    navigator.vibrate?.(100);
-  } else {
-    el.classList.add('wrong');
-    optionsEl.children[correct].classList.add('correct');
-    navigator.vibrate?.([200,100,200]);
-  }
-  nextBtn.style.display = 'block';
+function check(el,i){
+ if(locked) return;locked=true;
+ const c=questions[index].c;
+ if(i===c){el.classList.add('correct');score++;}
+ else{el.classList.add('wrong');options.children[c].classList.add('correct');}
+ nextBtn.style.display='block';
 }
-
-nextBtn.onclick = () => {
-  index++;
-  loadQuestion();
-};
-
-loadQuestion();
+nextBtn.onclick=()=>{index++;load();};
+load();
 </script>
 </body>
 </html>
