@@ -4,202 +4,136 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Bilim testi</title>
-
 <style>
-*{box-sizing:border-box;font-family:Arial, sans-serif}
+*{
+  box-sizing:border-box;
+  font-family:'Segoe UI', system-ui, -apple-system, sans-serif;
+}
 body{
   margin:0;
   min-height:100vh;
   display:flex;
   justify-content:center;
   align-items:center;
-  background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+  background:radial-gradient(circle at top, #1e3c72, #2a5298);
 }
 .card{
   background:#fff;
   width:95%;
   max-width:420px;
-  padding:25px;
-  border-radius:18px;
-  box-shadow:0 20px 40px rgba(0,0,0,.35);
-  animation:fade .4s ease;
+  padding:26px;
+  border-radius:22px;
+  box-shadow:0 30px 60px rgba(0,0,0,.35);
+  animation:pop .45s ease;
 }
-@keyframes fade{
-  from{opacity:0;transform:scale(.95)}
-  to{opacity:1;transform:scale(1)}
-}
-h2{text-align:center;margin-bottom:10px}
-.info{
-  display:flex;
-  justify-content:space-between;
-  font-size:14px;
-  margin-bottom:10px;
-}
-.question{
-  font-size:18px;
-  margin:15px 0;
-}
+@keyframes pop{0%{opacity:0;transform:scale(.92)}100%{opacity:1;transform:scale(1)}}
+h2{text-align:center;margin:5px 0 10px;font-size:26px}
+.info{display:flex;justify-content:space-between;font-size:14px;color:#555}
+.question{font-size:19px;margin:18px 0;font-weight:600}
 .option{
-  background:#f1f1f1;
-  padding:16px;
-  border-radius:12px;
-  margin-bottom:12px;
+  background:linear-gradient(135deg,#f8f9fa,#e9ecef);
+  padding:18px;
+  border-radius:16px;
+  margin-bottom:14px;
   cursor:pointer;
   font-size:17px;
+  transition:.2s;
+  border:2px solid transparent;
 }
-.option:hover{background:#e2f0ff}
-.option.selected{
-  background:#d9ecff;
-  border:2px solid #2196f3;
-}
+.option:hover{transform:scale(1.02)}
+.option.selected{background:linear-gradient(135deg,#e3f2fd,#bbdefb);border-color:#2196f3}
 button{
   width:100%;
-  padding:16px;
+  padding:18px;
   border:none;
-  border-radius:14px;
-  background:#1fa84f;
+  border-radius:18px;
+  background:linear-gradient(135deg,#00c853,#009624);
   color:#fff;
-  font-size:18px;
+  font-size:19px;
+  font-weight:600;
   cursor:pointer;
+  transition:.2s;
 }
-button:hover{background:#178f42}
-.result{
-  text-align:center;
-}
+button:hover{transform:translateY(-2px);box-shadow:0 10px 20px rgba(0,0,0,.25)}
+.result{text-align:center}
+.result p{font-size:18px}
 .ad-box{
-  margin-top:15px;
-  padding:15px;
-  background:#f5f5f5;
+  margin-top:18px;
+  padding:14px;
+  background:linear-gradient(135deg,#f1f3f5,#e9ecef);
   text-align:center;
-  border-radius:10px;
+  border-radius:14px;
   font-size:14px;
+  color:#666;
 }
 </style>
 </head>
-
 <body>
-
 <div class="card" id="app"></div>
 
-<audio id="clickSound">
-  <source src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3">
-</audio>
-
 <script>
-// 🔊 Ovoz + 📳 Vibratsiya
-function feedback(){
-  document.getElementById("clickSound").play();
-  if(navigator.vibrate) navigator.vibrate(50);
-}
-
-// 🔹 SAVOLLAR
-const easy = [
- {q:"O‘zbekiston poytaxti?",a:["Samarqand","Toshkent","Buxoro","Xiva"],c:1},
- {q:"2+2 nechiga teng?",a:["3","4","5","6"],c:1},
- {q:"Yer sayyorami?",a:["Ha","Yo‘q","Bilmayman","Yulduz"],c:0},
- {q:"Quyosh qayerda?",a:["Yerda","Osmonda","Oyda","Suvda"],c:1},
- {q:"1 hafta nechta kun?",a:["5","6","7","8"],c:2},
- {q:"Suv rangi?",a:["Qizil","Ko‘k","Shaffof","Yashil"],c:2},
- {q:"Olma nima?",a:["Hayvon","Meva","Mashina","Shahar"],c:1},
- {q:"Oy nechchi?",a:["1","2","3","4"],c:0},
- {q:"Kompyuter nima?",a:["O‘yin","Qurilma","Meva","Sport"],c:1},
- {q:"Internet nima?",a:["Kitob","Tarmoq","Ovqat","Musiqa"],c:1}
+const questions = [
+  {q:"O‘zbekiston poytaxti?",a:["Samarqand","Toshkent","Buxoro","Xiva"],c:1,l:"oson"},
+  {q:"Eng katta okean?",a:["Atlantika","Hind","Tinch","Shimoliy Muz"],c:2,l:"oson"},
+  {q:"Quyosh tizimida nechta sayyora bor?",a:["7","8","9","10"],c:1,l:"oson"},
+  {q:"Eng baland tog‘?",a:["Tyan-Shan","Elbrus","Everest","Pamir"],c:2,l:"oson"},
+  {q:"O‘zbekiston valyutasi?",a:["So‘m","Dollar","Rubl","Tenge"],c:0,l:"oson"},
+  {q:"Yer sun’iy yo‘ldoshi?",a:["Mars","Oy","Quyosh","Yulduz"],c:1,l:"oson"},
+  {q:"HTML nimani anglatadi?",a:["Hyper Text Markup Language","High Text","Home Tool","None"],c:0,l:"qiyin"},
+  {q:"JS qaysi til?",a:["Belgilash","Dasturlash","Grafika","Matn"],c:1,l:"qiyin"},
+  {q:"CSS vazifasi?",a:["Hisoblash","Dizayn","Server","Ma’lumot"],c:1,l:"qiyin"},
+  {q:"HTTP nimaga xizmat qiladi?",a:["Grafika","Internet aloqa","Video","Audio"],c:1,l:"qiyin"},
+  {q:"RAM nima?",a:["Xotira","Disk","CPU","Monitor"],c:0,l:"qiyin"},
+  {q:"URL nimani bildiradi?",a:["Manzil","Kod","Server","Ilova"],c:0,l:"qiyin"},
+  {q:"Binary sanoq tizimi?",a:["2","8","10","16"],c:0,l:"juda"},
+  {q:"CPU yuragi nima?",a:["ALU","RAM","GPU","SSD"],c:0,l:"juda"},
+  {q:"IPv4 nechta bit?",a:["16","32","64","128"],c:1,l:"juda"},
+  {q:"DNS vazifasi?",a:["IP tarjima","Saqlash","Dizayn","Xavfsizlik"],c:0,l:"juda"},
+  {q:"Git nima?",a:["O‘yin","Versiya nazorati","Brauzer","OS"],c:1,l:"juda"},
+  {q:"API nima?",a:["Dastur interfeysi","Dizayn","Server","Xotira"],c:0,l:"juda"}
 ];
 
-const medium = [
- {q:"Eng katta okean?",a:["Atlantika","Hind","Tinch","Shimoliy Muz"],c:2},
- {q:"HTML nimani bildiradi?",a:["Dastur","Belgilash tili","O‘yin","OS"],c:1},
- {q:"CSS nima uchun?",a:["Mantiq","Dizayn","Server","Ma’lumot"],c:1},
- {q:"JS nima?",a:["Til","Brauzer","Server","Telefon"],c:0},
- {q:"O‘zbekiston qit’asi?",a:["Afrika","Yevropa","Osiyo","Amerika"],c:2},
- {q:"1 km nechta metr?",a:["10","100","1000","10000"],c:2},
- {q:"Eng tez hayvon?",a:["Sher","Ot","Gepard","Bo‘ri"],c:2},
- {q:"Suv formulasi?",a:["CO2","H2O","O2","Na"],c:1},
- {q:"CPU nima?",a:["Xotira","Protsessor","Disk","Monitor"],c:1},
- {q:"URL nima?",a:["Manzil","Rasm","O‘yin","Fayl"],c:0}
-];
-
-const hard = [
- {q:"IPv4 nechta bit?",a:["16","32","64","128"],c:1},
- {q:"HTTPS nimani bildiradi?",a:["Xavfsiz","Tez","Oddiy","Bepul"],c:0},
- {q:"RAM o‘chsa nima bo‘ladi?",a:["Saqlanadi","Yo‘qoladi","Ko‘payadi","Yashirinadi"],c:1},
- {q:"GitHub nima?",a:["O‘yin","Kod platforma","Brauzer","Server"],c:1},
- {q:"DNS vazifasi?",a:["Saqlash","Tarjima","Xavfsizlik","Dizayn"],c:1},
- {q:"Frontend nima?",a:["Server","Foydalanuvchi tomoni","Ma’lumot","Tarmoq"],c:1},
- {q:"Backend nima?",a:["Dizayn","Server","Rasm","Animatsiya"],c:1},
- {q:"API nima?",a:["Bog‘lovchi","O‘yin","Til","OS"],c:0},
- {q:"Framework nima?",a:["Asos","Kutubxona","O‘yin","Server"],c:0},
- {q:"Bug nima?",a:["Xato","Funksiya","Dizayn","Tarmoq"],c:0}
-];
-
-const questions = [...easy, ...medium, ...hard];
-
-let index = 0;
-let score = 0;
-let selected = null;
-
-const app = document.getElementById("app");
-
-function level(){
-  if(index<10) return "Oson";
-  if(index<20) return "Qiyin";
-  return "Juda qiyin";
-}
+let index=0,score=0,selected=null;
+const app=document.getElementById('app');
 
 function render(){
-  const q = questions[index];
-  app.innerHTML = `
+  if(index>=questions.length){
+    const percent=Math.round(score/questions.length*100);
+    app.innerHTML=`<div class='result'>
+      <h2>🎉 Natija</h2>
+      <p>Ball: <b>${score}/${questions.length}</b></p>
+      <p>Foiz: <b>${percent}%</b></p>
+      <div class='ad-box'>📢 Reklama (Monetag)</div>
+    </div>`;
+    return;
+  }
+  const q=questions[index];
+  app.innerHTML=`
     <h2>🧠 Bilim testi</h2>
-    <div class="info">
-      <span>Daraja: ${level()}</span>
-      <span>${index+1} / 30</span>
-    </div>
-    <div class="question">${q.q}</div>
-    ${q.a.map((o,i)=>`
-      <div class="option" onclick="choose(${i})">${o}</div>
-    `).join("")}
-    <button onclick="next()">Keyingi savol</button>
-
-    <div class="ad-box">
-      🔔 Reklama joyi (Monetag shu yerga qo‘yiladi)
-    </div>
+    <div class='info'><span>Savol: ${index+1}/${questions.length}</span><span>Daraja: ${q.l}</span></div>
+    <div class='question'>${q.q}</div>
+    ${q.a.map((t,i)=>`<div class='option' onclick='select(${i})'>${t}</div>`).join('')}
+    <button onclick='next()'>Keyingi savol</button>
   `;
 }
 
-function choose(i){
-  feedback();
-  selected = i;
-  document.querySelectorAll(".option").forEach((el,idx)=>{
-    el.classList.toggle("selected", idx===i);
+function select(i){
+  selected=i;
+  document.querySelectorAll('.option').forEach((o,idx)=>{
+    o.classList.toggle('selected',idx===i);
   });
+  if(navigator.vibrate) navigator.vibrate(40);
 }
 
 function next(){
-  if(selected===null) return alert("Variant tanla!");
+  if(selected===null) return alert('Javob tanlang');
   if(selected===questions[index].c) score++;
-  index++;
   selected=null;
-
-  if(index>=questions.length) return result();
+  index++;
   render();
-}
-
-function result(){
-  const percent = Math.round(score/30*100);
-  app.innerHTML = `
-    <div class="result">
-      <h2>🎉 Natija</h2>
-      <p>Ball: <b>${score} / 30</b></p>
-      <p>Foiz: <b>${percent}%</b></p>
-      <button onclick="location.reload()">Qayta boshlash</button>
-    </div>
-  `;
 }
 
 render();
 </script>
-
 </body>
 </html>
-
-
